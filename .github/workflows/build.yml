@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  build-web:
     runs-on: ubuntu-latest
     container:
       image: barichello/godot-ci:4.3
@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup export directories
-        run: mkdir -p build
+        run: mkdir -p build/web build/linux
 
       - name: Import assets
         run: godot --headless --import 2>&1 || true
@@ -46,14 +46,42 @@ jobs:
           done
           echo "Script validation complete."
 
-      - name: Export Linux build
-        run: godot --headless --export-debug "Linux" build/draw-jump.x86_64 2>&1 || true
+      - name: Export Web build
+        run: godot --headless --export-debug "Web" build/web/index.html 2>&1 || true
         timeout-minutes: 5
 
-      - name: Upload build artifact
+      - name: Upload Web build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web/
+          if-no-files-found: warn
+          retention-days: 14
+
+  build-linux:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup export directories
+        run: mkdir -p build/linux
+
+      - name: Import assets
+        run: godot --headless --import 2>&1 || true
+        timeout-minutes: 2
+
+      - name: Export Linux build
+        run: godot --headless --export-debug "Linux" build/linux/draw-jump.x86_64 2>&1 || true
+        timeout-minutes: 5
+
+      - name: Upload Linux build artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux-build
-          path: build/
+          path: build/linux/
           if-no-files-found: warn
           retention-days: 7
