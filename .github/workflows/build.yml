@@ -16,8 +16,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup export templates
+        run: |
+          # barichello/godot-ci installs templates under /root/, but GitHub
+          # Actions sets HOME=/github/home inside containers. Symlink so
+          # Godot finds them at the path it expects.
+          mkdir -p ~/.local/share/godot/export_templates/
+          ln -s /root/.local/share/godot/export_templates/4.3.stable \
+                ~/.local/share/godot/export_templates/4.3.stable
+
       - name: Setup export directories
-        run: mkdir -p build/web build/linux
+        run: mkdir -p build/web
 
       - name: Import assets
         run: godot --headless --import 2>&1 || true
@@ -47,7 +56,7 @@ jobs:
           echo "Script validation complete."
 
       - name: Export Web build
-        run: godot --headless --export-debug "Web" build/web/index.html 2>&1 || true
+        run: godot --headless --export-debug "Web" build/web/index.html 2>&1
         timeout-minutes: 5
 
       - name: Upload Web build artifact
@@ -67,6 +76,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup export templates
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates/
+          ln -s /root/.local/share/godot/export_templates/4.3.stable \
+                ~/.local/share/godot/export_templates/4.3.stable
+
       - name: Setup export directories
         run: mkdir -p build/linux
 
@@ -75,7 +90,7 @@ jobs:
         timeout-minutes: 2
 
       - name: Export Linux build
-        run: godot --headless --export-debug "Linux" build/linux/draw-jump.x86_64 2>&1 || true
+        run: godot --headless --export-debug "Linux" build/linux/draw-jump.x86_64 2>&1
         timeout-minutes: 5
 
       - name: Upload Linux build artifact
