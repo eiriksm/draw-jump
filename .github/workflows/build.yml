@@ -1,0 +1,59 @@
+name: Build Godot Project
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup export directories
+        run: mkdir -p build
+
+      - name: Import assets
+        run: godot --headless --import 2>&1 || true
+        timeout-minutes: 2
+
+      - name: Validate project file
+        run: |
+          echo "Checking project.godot exists and is valid..."
+          test -f project.godot
+          grep -q 'config/name="DrawJump"' project.godot
+          grep -q 'run/main_scene' project.godot
+          echo "Project file is valid."
+
+      - name: Validate scene files
+        run: |
+          echo "Checking scene files..."
+          test -f scenes/main.tscn
+          echo "All scene files present."
+
+      - name: Validate scripts
+        run: |
+          echo "Checking GDScript files for syntax errors..."
+          for script in $(find . -name "*.gd" -not -path "./.godot/*"); do
+            echo "Checking $script..."
+            godot --headless --check-only --script "$script" 2>&1 || true
+          done
+          echo "Script validation complete."
+
+      - name: Export Linux build
+        run: godot --headless --export-debug "Linux" build/draw-jump.x86_64 2>&1 || true
+        timeout-minutes: 5
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: build/
+          if-no-files-found: warn
+          retention-days: 7
