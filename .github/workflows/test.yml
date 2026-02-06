@@ -1,0 +1,81 @@
+name: Test Godot Project
+
+on:
+  push:
+    branches: [main, "claude/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: barichello/godot-ci:4.3
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Godot environment
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates/
+          ln -s /root/.local/share/godot/export_templates/4.3.stable \
+                ~/.local/share/godot/export_templates/4.3.stable
+
+      - name: Import assets
+        run: godot --headless --import 2>&1 || true
+        timeout-minutes: 2
+
+      - name: Run GDScript tests
+        run: godot --headless --script tests/test_runner.gd 2>&1
+        timeout-minutes: 2
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify project structure
+        run: |
+          echo "=== Project Structure Test ==="
+          errors=0
+
+          # Check required files exist
+          for f in project.godot scenes/main.tscn scripts/animal.gd; do
+            if [ -f "$f" ]; then
+              echo "PASS: $f exists"
+            else
+              echo "FAIL: $f is missing"
+              errors=$((errors + 1))
+            fi
+          done
+
+          # Check project.godot has required settings
+          if grep -q 'run/main_scene' project.godot; then
+            echo "PASS: main scene configured"
+          else
+            echo "FAIL: main scene not configured"
+            errors=$((errors + 1))
+          fi
+
+          # Check animal script references rotation
+          if grep -q 'ROTATE_DEGREES' scripts/animal.gd; then
+            echo "PASS: rotation constant defined"
+          else
+            echo "FAIL: rotation constant missing"
+            errors=$((errors + 1))
+          fi
+
+          # Check scene references the script
+          if grep -q 'animal.gd' scenes/main.tscn; then
+            echo "PASS: scene references animal script"
+          else
+            echo "FAIL: scene does not reference animal script"
+            errors=$((errors + 1))
+          fi
+
+          echo ""
+          echo "=== Results: $errors error(s) ==="
+          exit $errors
