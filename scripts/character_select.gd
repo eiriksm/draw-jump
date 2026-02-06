@@ -5,8 +5,8 @@ extends Control
 
 
 func _ready() -> void:
-	$CatButton.pressed.connect(_on_cat_selected)
-	$GiraffeButton.pressed.connect(_on_giraffe_selected)
+	%CatButton.pressed.connect(_on_cat_selected)
+	%GiraffeButton.pressed.connect(_on_giraffe_selected)
 
 
 func _on_cat_selected() -> void:
