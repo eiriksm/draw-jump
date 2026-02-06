@@ -9,6 +9,8 @@ on:
 jobs:
   build-web:
     runs-on: ubuntu-latest
+    permissions: 
+      issues: write 
     container:
       image: barichello/godot-ci:4.3
 
