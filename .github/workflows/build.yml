@@ -10,7 +10,8 @@ jobs:
   build-web:
     runs-on: ubuntu-latest
     permissions: 
-      pull-requests: write 
+      pull-requests: write
+      statuses: write
     container:
       image: barichello/godot-ci:4.3
 
