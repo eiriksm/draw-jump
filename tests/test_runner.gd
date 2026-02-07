@@ -1,6 +1,6 @@
 extends SceneTree
 
-## Simple test runner that validates core game logic without loading scenes
+## Test runner that validates core game logic without loading scenes
 ## that contain imported resources (textures), which segfault in headless CI.
 ## Exit code 0 = all tests passed, 1 = failures.
 
@@ -10,11 +10,19 @@ func _init() -> void:
 
 	print("=== DrawJump Test Suite ===\n")
 
-	failures += _test_script_loads()
-	failures += _test_rotation_constants()
-	failures += _test_rotation_logic()
-	failures += _test_multiple_rotations()
-	failures += _test_scene_file_parseable()
+	failures += _test_player_script_loads()
+	failures += _test_game_script_loads()
+	failures += _test_character_select_script_loads()
+	failures += _test_background_script_loads()
+	failures += _test_jump_velocity_constants()
+	failures += _test_gravity_constant()
+	failures += _test_jump_sets_velocity()
+	failures += _test_giraffe_jumps_higher()
+	failures += _test_no_double_jump()
+	failures += _test_landing_resets_state()
+	failures += _test_character_select_scene_parseable()
+	failures += _test_game_scene_parseable()
+	failures += _test_project_main_scene()
 
 	print("\n=== Results: %d failure(s) ===" % failures)
 
@@ -24,133 +32,284 @@ func _init() -> void:
 		quit(0)
 
 
-func _test_script_loads() -> int:
-	print("Test: Animal script loads...")
-	var script := load("res://scripts/animal.gd") as GDScript
+# ---- Script loading tests ----
+
+func _test_player_script_loads() -> int:
+	print("Test: Player script loads...")
+	var script := load("res://scripts/player.gd") as GDScript
 	if script == null:
-		print("  FAIL: Could not load animal.gd")
+		print("  FAIL: Could not load player.gd")
 		return 1
 	print("  PASS")
 	return 0
 
 
-func _test_rotation_constants() -> int:
-	print("Test: Script has correct rotation constant...")
-	var script := load("res://scripts/animal.gd") as GDScript
+func _test_game_script_loads() -> int:
+	print("Test: Game script loads...")
+	var script := load("res://scripts/game.gd") as GDScript
+	if script == null:
+		print("  FAIL: Could not load game.gd")
+		return 1
+	print("  PASS")
+	return 0
+
+
+func _test_character_select_script_loads() -> int:
+	print("Test: Character select script loads...")
+	var script := load("res://scripts/character_select.gd") as GDScript
+	if script == null:
+		print("  FAIL: Could not load character_select.gd")
+		return 1
+	print("  PASS")
+	return 0
+
+
+func _test_background_script_loads() -> int:
+	print("Test: Background script loads...")
+	var script := load("res://scripts/background.gd") as GDScript
+	if script == null:
+		print("  FAIL: Could not load background.gd")
+		return 1
+	print("  PASS")
+	return 0
+
+
+# ---- Player constant tests ----
+
+func _test_jump_velocity_constants() -> int:
+	print("Test: Player has correct jump velocity constants...")
+	var script := load("res://scripts/player.gd") as GDScript
 	if script == null:
 		print("  FAIL: Could not load script")
 		return 1
 
 	var source: String = script.source_code
-	if "ROTATE_DEGREES" not in source:
-		print("  FAIL: ROTATE_DEGREES constant not found")
+	if "JUMP_VELOCITY" not in source:
+		print("  FAIL: JUMP_VELOCITY constant not found")
 		return 1
-	if "90.0" not in source and "90" not in source:
-		print("  FAIL: Rotation not set to 90 degrees")
+	if "cat" not in source or "giraffe" not in source:
+		print("  FAIL: Expected both cat and giraffe entries in JUMP_VELOCITY")
 		return 1
-
 	print("  PASS")
 	return 0
 
 
-func _test_rotation_logic() -> int:
-	print("Test: Rotation increments by 90 degrees on press...")
-
-	# Build a TextureButton with the script attached — no texture needed.
-	var script := load("res://scripts/animal.gd") as GDScript
+func _test_gravity_constant() -> int:
+	print("Test: Player has GRAVITY constant...")
+	var script := load("res://scripts/player.gd") as GDScript
 	if script == null:
 		print("  FAIL: Could not load script")
 		return 1
 
-	var btn := TextureButton.new()
-	btn.size = Vector2(128, 128)
-	btn.set_script(script)
-	root.add_child(btn)
-
-	# _ready() will have run, connecting signals and setting pivot.
-	# Verify initial state.
-	if btn.rotation_degrees != 0.0:
-		print("  FAIL: Initial rotation should be 0, got %f" % btn.rotation_degrees)
-		btn.queue_free()
+	var source: String = script.source_code
+	if "GRAVITY" not in source:
+		print("  FAIL: GRAVITY constant not found")
 		return 1
-
-	# Call _on_pressed directly to simulate a click.
-	btn._on_pressed()
-	var target: float = btn._target_rotation
-	if target != 90.0:
-		print("  FAIL: _target_rotation should be 90 after first click, got %f" % target)
-		btn.queue_free()
-		return 1
-
 	print("  PASS")
-	btn.queue_free()
 	return 0
 
 
-func _test_multiple_rotations() -> int:
-	print("Test: Multiple rotations accumulate correctly...")
+# ---- Player jump logic tests ----
 
-	var script := load("res://scripts/animal.gd") as GDScript
-	if script == null:
-		print("  FAIL: Could not load script")
+func _test_jump_sets_velocity() -> int:
+	print("Test: Jumping sets upward velocity...")
+	var player := _make_player("cat")
+	if player == null:
 		return 1
 
-	var btn := TextureButton.new()
-	btn.size = Vector2(128, 128)
-	btn.set_script(script)
-	root.add_child(btn)
-
-	# First click
-	btn._on_pressed()
-	if btn._target_rotation != 90.0:
-		print("  FAIL: Expected 90 after first click, got %f" % btn._target_rotation)
-		btn.queue_free()
+	player.jump()
+	if player.velocity_y >= 0.0:
+		print("  FAIL: velocity_y should be negative after jump, got %f" % player.velocity_y)
+		player.queue_free()
 		return 1
-
-	# _is_rotating is true, so a second call should be ignored.
-	btn._on_pressed()
-	if btn._target_rotation != 90.0:
-		print("  FAIL: Should still be 90 while rotating, got %f" % btn._target_rotation)
-		btn.queue_free()
-		return 1
-
-	# Simulate tween finishing, then click again.
-	btn._is_rotating = false
-	btn._on_pressed()
-	if btn._target_rotation != 180.0:
-		print("  FAIL: Expected 180 after second real click, got %f" % btn._target_rotation)
-		btn.queue_free()
+	if player._is_on_ground:
+		print("  FAIL: _is_on_ground should be false after jump")
+		player.queue_free()
 		return 1
 
 	print("  PASS")
-	btn.queue_free()
+	player.queue_free()
 	return 0
 
 
-func _test_scene_file_parseable() -> int:
-	print("Test: Scene file exists and references script...")
+func _test_giraffe_jumps_higher() -> int:
+	print("Test: Giraffe jumps higher than cat...")
+	var cat := _make_player("cat")
+	var giraffe := _make_player("giraffe")
+	if cat == null or giraffe == null:
+		return 1
 
-	# Read the scene file as text to verify structure without triggering
-	# resource loading (which would try to import the SVG texture).
-	var file := FileAccess.open("res://scenes/main.tscn", FileAccess.READ)
+	cat.jump()
+	giraffe.jump()
+
+	# More negative velocity = higher jump.
+	if giraffe.velocity_y >= cat.velocity_y:
+		print("  FAIL: Giraffe velocity (%f) should be more negative than cat (%f)" % [giraffe.velocity_y, cat.velocity_y])
+		cat.queue_free()
+		giraffe.queue_free()
+		return 1
+
+	print("  PASS")
+	cat.queue_free()
+	giraffe.queue_free()
+	return 0
+
+
+func _test_no_double_jump() -> int:
+	print("Test: Cannot jump while already in the air...")
+	var player := _make_player("cat")
+	if player == null:
+		return 1
+
+	player.jump()
+	var first_velocity: float = player.velocity_y
+
+	# Try jumping again while in air.
+	player.jump()
+	if player.velocity_y != first_velocity:
+		print("  FAIL: Velocity changed during mid-air jump attempt")
+		player.queue_free()
+		return 1
+
+	print("  PASS")
+	player.queue_free()
+	return 0
+
+
+func _test_landing_resets_state() -> int:
+	print("Test: Landing resets player to ground state...")
+	var player := _make_player("cat")
+	if player == null:
+		return 1
+
+	player.jump()
+
+	# Simulate enough time for the player to fall back down.
+	# With GRAVITY=1200 and initial velocity around -450,
+	# it takes about 0.75s to return to ground. Simulate in steps.
+	for i in range(100):
+		player._process(0.016)  # ~60fps steps
+		if player._is_on_ground:
+			break
+
+	if not player._is_on_ground:
+		print("  FAIL: Player did not land after simulated frames")
+		player.queue_free()
+		return 1
+
+	if player.velocity_y != 0.0:
+		print("  FAIL: velocity_y should be 0 after landing, got %f" % player.velocity_y)
+		player.queue_free()
+		return 1
+
+	if player.position.y != player.ground_y:
+		print("  FAIL: Player y should equal ground_y after landing")
+		player.queue_free()
+		return 1
+
+	print("  PASS")
+	player.queue_free()
+	return 0
+
+
+# ---- Scene file tests ----
+
+func _test_character_select_scene_parseable() -> int:
+	print("Test: Character select scene file exists and is valid...")
+
+	var file := FileAccess.open("res://scenes/character_select.tscn", FileAccess.READ)
 	if file == null:
-		print("  FAIL: Could not open main.tscn")
+		print("  FAIL: Could not open character_select.tscn")
 		return 1
 
 	var content := file.get_as_text()
 	file.close()
 
-	if "animal.gd" not in content:
-		print("  FAIL: Scene does not reference animal.gd")
+	if "character_select.gd" not in content:
+		print("  FAIL: Scene does not reference character_select.gd")
 		return 1
-
-	if "AnimalButton" not in content:
-		print("  FAIL: Scene does not contain AnimalButton node")
+	if "CatButton" not in content:
+		print("  FAIL: Scene does not contain CatButton")
 		return 1
-
-	if "TextureButton" not in content:
-		print("  FAIL: Scene does not use TextureButton type")
+	if "GiraffeButton" not in content:
+		print("  FAIL: Scene does not contain GiraffeButton")
+		return 1
+	if "cat.png" not in content:
+		print("  FAIL: Scene does not reference cat.png")
+		return 1
+	if "giraffe.png" not in content:
+		print("  FAIL: Scene does not reference giraffe.png")
 		return 1
 
 	print("  PASS")
 	return 0
+
+
+func _test_game_scene_parseable() -> int:
+	print("Test: Game scene file exists and is valid...")
+
+	var file := FileAccess.open("res://scenes/game.tscn", FileAccess.READ)
+	if file == null:
+		print("  FAIL: Could not open game.tscn")
+		return 1
+
+	var content := file.get_as_text()
+	file.close()
+
+	if "game.gd" not in content:
+		print("  FAIL: Scene does not reference game.gd")
+		return 1
+	if "player.gd" not in content:
+		print("  FAIL: Scene does not reference player.gd")
+		return 1
+	if "background.gd" not in content:
+		print("  FAIL: Scene does not reference background.gd")
+		return 1
+	if "Player" not in content:
+		print("  FAIL: Scene does not contain Player node")
+		return 1
+	if "Background" not in content:
+		print("  FAIL: Scene does not contain Background node")
+		return 1
+
+	print("  PASS")
+	return 0
+
+
+func _test_project_main_scene() -> int:
+	print("Test: Project main scene points to character select...")
+
+	var file := FileAccess.open("res://project.godot", FileAccess.READ)
+	if file == null:
+		print("  FAIL: Could not open project.godot")
+		return 1
+
+	var content := file.get_as_text()
+	file.close()
+
+	if "character_select.tscn" not in content:
+		print("  FAIL: Main scene is not character_select.tscn")
+		return 1
+
+	print("  PASS")
+	return 0
+
+
+# ---- Helpers ----
+
+func _make_player(character: String) -> Sprite2D:
+	var script := load("res://scripts/player.gd") as GDScript
+	if script == null:
+		print("  FAIL: Could not load player.gd")
+		return null
+
+	var sprite := Sprite2D.new()
+	sprite.set_script(script)
+	sprite.position = Vector2(150, 500)
+	root.add_child(sprite)
+
+	# _ready() has run — set character type and ground_y.
+	sprite.character_type = character
+	sprite.ground_y = 500.0
+
+	return sprite
