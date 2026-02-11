@@ -87,8 +87,8 @@ func _test_jump_velocity_constants() -> int:
 	if "JUMP_VELOCITY" not in source:
 		print("  FAIL: JUMP_VELOCITY constant not found")
 		return 1
-	if "cat" not in source or "giraffe" not in source:
-		print("  FAIL: Expected both cat and giraffe entries in JUMP_VELOCITY")
+	if "unicorn" not in source or "giraffe" not in source:
+		print("  FAIL: Expected both unicorn and giraffe entries in JUMP_VELOCITY")
 		return 1
 	print("  PASS")
 	return 0
@@ -113,7 +113,7 @@ func _test_gravity_constant() -> int:
 
 func _test_jump_sets_velocity() -> int:
 	print("Test: Jumping sets upward velocity...")
-	var player := _make_player("cat")
+	var player := _make_player("unicorn")
 	if player == null:
 		return 1
 
@@ -133,31 +133,31 @@ func _test_jump_sets_velocity() -> int:
 
 
 func _test_giraffe_jumps_higher() -> int:
-	print("Test: Giraffe jumps higher than cat...")
-	var cat := _make_player("cat")
+	print("Test: Giraffe jumps higher than unicorn...")
+	var unicorn := _make_player("unicorn")
 	var giraffe := _make_player("giraffe")
-	if cat == null or giraffe == null:
+	if unicorn == null or giraffe == null:
 		return 1
 
-	cat.jump()
+	unicorn.jump()
 	giraffe.jump()
 
 	# More negative velocity = higher jump.
-	if giraffe.velocity_y >= cat.velocity_y:
-		print("  FAIL: Giraffe velocity (%f) should be more negative than cat (%f)" % [giraffe.velocity_y, cat.velocity_y])
-		cat.queue_free()
+	if giraffe.velocity_y >= unicorn.velocity_y:
+		print("  FAIL: Giraffe velocity (%f) should be more negative than unicorn (%f)" % [giraffe.velocity_y, unicorn.velocity_y])
+		unicorn.queue_free()
 		giraffe.queue_free()
 		return 1
 
 	print("  PASS")
-	cat.queue_free()
+	unicorn.queue_free()
 	giraffe.queue_free()
 	return 0
 
 
 func _test_no_double_jump() -> int:
 	print("Test: Cannot jump while already in the air...")
-	var player := _make_player("cat")
+	var player := _make_player("unicorn")
 	if player == null:
 		return 1
 
@@ -178,7 +178,7 @@ func _test_no_double_jump() -> int:
 
 func _test_landing_resets_state() -> int:
 	print("Test: Landing resets player to ground state...")
-	var player := _make_player("cat")
+	var player := _make_player("unicorn")
 	if player == null:
 		return 1
 
@@ -234,8 +234,8 @@ func _test_character_select_scene_parseable() -> int:
 	if "GiraffeButton" not in content:
 		print("  FAIL: Scene does not contain GiraffeButton")
 		return 1
-	if "cat.png" not in content:
-		print("  FAIL: Scene does not reference cat.png")
+	if "unicorn.png" not in content:
+		print("  FAIL: Scene does not reference unicorn.png")
 		return 1
 	if "giraffe.png" not in content:
 		print("  FAIL: Scene does not reference giraffe.png")

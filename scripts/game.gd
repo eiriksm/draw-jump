@@ -10,7 +10,7 @@ const GROUND_Y := 500
 
 
 func _ready() -> void:
-	var character: String = "cat"
+	var character: String = "unicorn"
 	if get_tree().has_meta("selected_character"):
 		character = get_tree().get_meta("selected_character")
 

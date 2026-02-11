@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://main_scene"]
 
-[ext_resource type="Texture2D" path="res://assets/cat.svg" id="1_cat"]
+[ext_resource type="Texture2D" path="res://assets/unicorn.png" id="1_cat"]
 [ext_resource type="Script" path="res://scripts/animal.gd" id="2_script"]
 
 [node name="Main" type="Control"]
@@ -34,7 +34,7 @@ theme_override_constants/separation = 20
 
 [node name="Label" type="Label" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "Click the cat to rotate it!"
+text = "Click the unicorn to rotate it!"
 horizontal_alignment = 1
 
 [node name="AnimalButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
