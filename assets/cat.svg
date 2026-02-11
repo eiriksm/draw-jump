@@ -1,31 +1,72 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
-  <!-- Body -->
-  <ellipse cx="64" cy="80" rx="30" ry="25" fill="#f4a460"/>
-  <!-- Head -->
-  <circle cx="64" cy="45" r="22" fill="#f4a460"/>
-  <!-- Left ear -->
-  <polygon points="46,30 38,10 54,24" fill="#f4a460"/>
-  <polygon points="48,28 42,14 54,24" fill="#ffb6c1"/>
-  <!-- Right ear -->
-  <polygon points="82,30 90,10 74,24" fill="#f4a460"/>
-  <polygon points="80,28 86,14 74,24" fill="#ffb6c1"/>
-  <!-- Eyes -->
-  <ellipse cx="55" cy="42" rx="4" ry="5" fill="#2e8b57"/>
-  <ellipse cx="73" cy="42" rx="4" ry="5" fill="#2e8b57"/>
-  <circle cx="55" cy="41" r="2" fill="black"/>
-  <circle cx="73" cy="41" r="2" fill="black"/>
-  <!-- Nose -->
-  <polygon points="64,50 61,47 67,47" fill="#ff69b4"/>
-  <!-- Mouth -->
-  <path d="M61,50 Q64,55 67,50" fill="none" stroke="#333" stroke-width="1"/>
-  <!-- Whiskers -->
-  <line x1="30" y1="46" x2="52" y2="48" stroke="#333" stroke-width="0.8"/>
-  <line x1="30" y1="50" x2="52" y2="50" stroke="#333" stroke-width="0.8"/>
-  <line x1="76" y1="48" x2="98" y2="46" stroke="#333" stroke-width="0.8"/>
-  <line x1="76" y1="50" x2="98" y2="50" stroke="#333" stroke-width="0.8"/>
-  <!-- Tail -->
-  <path d="M94,80 Q110,60 100,45" fill="none" stroke="#f4a460" stroke-width="5" stroke-linecap="round"/>
-  <!-- Paws -->
-  <ellipse cx="48" cy="102" rx="8" ry="5" fill="#f4a460"/>
-  <ellipse cx="80" cy="102" rx="8" ry="5" fill="#f4a460"/>
+  <defs>
+    <filter id="crayon" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="turbulence" baseFrequency="0.04" numOctaves="4" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+  <g filter="url(#crayon)">
+    <!-- Tail (behind body) -->
+    <path d="M95,42 Q108,35 115,38 Q120,42 116,48 Q112,52 100,50 Z" fill="#dc3232"/>
+    <path d="M96,47 Q110,42 117,46 Q121,50 116,55 Q111,58 100,55 Z" fill="#f08c1e"/>
+    <path d="M97,52 Q110,48 118,52 Q121,57 116,61 Q110,63 100,60 Z" fill="#f0d232"/>
+    <path d="M97,57 Q109,54 117,58 Q120,63 115,66 Q109,68 99,65 Z" fill="#50be46"/>
+    <path d="M96,62 Q108,59 115,63 Q118,68 113,71 Q107,73 98,69 Z" fill="#3c78d2"/>
+    <path d="M95,66 Q106,64 113,68 Q116,72 111,75 Q105,77 97,73 Z" fill="#8c3cb4"/>
+
+    <!-- Legs -->
+    <path d="M38,78 L36,100 L44,100 L46,78 Z" fill="#8c3cb4"/>
+    <path d="M50,79 L49,101 L57,101 L56,79 Z" fill="#8c3cb4"/>
+    <path d="M72,79 L71,101 L79,101 L78,79 Z" fill="#8c3cb4"/>
+    <path d="M84,78 L83,100 L91,100 L90,78 Z" fill="#8c3cb4"/>
+    <!-- Hooves -->
+    <ellipse cx="40" cy="101" rx="5" ry="3" fill="#50327a"/>
+    <ellipse cx="53" cy="102" rx="5" ry="3" fill="#50327a"/>
+    <ellipse cx="75" cy="102" rx="5" ry="3" fill="#50327a"/>
+    <ellipse cx="87" cy="101" rx="5" ry="3" fill="#50327a"/>
+
+    <!-- Body - rainbow striped ellipse -->
+    <clipPath id="bodyClip">
+      <ellipse cx="66" cy="62" rx="36" ry="22"/>
+    </clipPath>
+    <g clip-path="url(#bodyClip)">
+      <rect x="30" y="40" width="72" height="8" fill="#dc3232"/>
+      <rect x="30" y="47" width="72" height="8" fill="#f08c1e"/>
+      <rect x="30" y="54" width="72" height="8" fill="#f0d232"/>
+      <rect x="30" y="61" width="72" height="8" fill="#50be46"/>
+      <rect x="30" y="68" width="72" height="8" fill="#3c78d2"/>
+      <rect x="30" y="75" width="72" height="8" fill="#8c3cb4"/>
+    </g>
+    <!-- Body outline for crayon feel -->
+    <ellipse cx="66" cy="62" rx="36" ry="22" fill="none" stroke="#555" stroke-width="1" opacity="0.3"/>
+
+    <!-- Neck -->
+    <path d="M42,50 L48,50 L40,25 L34,28 Z" fill="#dc3232"/>
+    <path d="M36,38 L46,35 L48,50 L42,50 Z" fill="#f08c1e"/>
+    <path d="M34,28 L40,25 L43,33 L36,36 Z" fill="#f0d232"/>
+
+    <!-- Head -->
+    <ellipse cx="32" cy="24" rx="14" ry="11" fill="#f0b428"/>
+    <ellipse cx="32" cy="24" rx="12" ry="9" fill="#f0c832"/>
+
+    <!-- Horn -->
+    <polygon points="32,5 28,14 36,14" fill="#f5dc3c"/>
+    <line x1="30" y1="13" x2="33" y2="7" stroke="#d2b41e" stroke-width="1.2"/>
+    <line x1="31" y1="11" x2="34" y2="8" stroke="#c8a014" stroke-width="0.8"/>
+
+    <!-- Eye -->
+    <circle cx="26" cy="22" r="4" fill="#1e1e1e"/>
+    <circle cx="25" cy="21" r="1.5" fill="white"/>
+
+    <!-- Mouth -->
+    <path d="M20,28 Q24,31 28,29" fill="none" stroke="#4a3030" stroke-width="1.2" stroke-linecap="round"/>
+
+    <!-- Mane (flowing from head down neck) -->
+    <path d="M38,14 Q48,12 50,18 Q47,22 40,19 Z" fill="#dc3232"/>
+    <path d="M40,19 Q50,18 52,24 Q49,28 42,25 Z" fill="#f08c1e"/>
+    <path d="M42,25 Q52,24 53,30 Q50,34 44,31 Z" fill="#f0d232"/>
+    <path d="M43,31 Q52,30 53,36 Q50,40 45,37 Z" fill="#50be46"/>
+    <path d="M44,37 Q52,36 53,42 Q50,46 46,43 Z" fill="#3c78d2"/>
+    <path d="M45,43 Q52,42 52,48 Q49,51 46,48 Z" fill="#8c3cb4"/>
+  </g>
 </svg>

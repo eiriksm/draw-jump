@@ -61,7 +61,7 @@ custom_minimum_size = Vector2(128, 128)
 
 [node name="CatLabel" type="Label" parent="CenterContainer/VBoxContainer/HBoxContainer/CatVBox"]
 layout_mode = 2
-text = "Cat"
+text = "Unicorn"
 horizontal_alignment = 1
 
 [node name="GiraffeVBox" type="VBoxContainer" parent="CenterContainer/VBoxContainer/HBoxContainer"]
