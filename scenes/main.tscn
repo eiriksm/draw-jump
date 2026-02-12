@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://main_scene"]
 
-[ext_resource type="Texture2D" path="res://assets/unicorn.png" id="1_cat"]
+[ext_resource type="Texture2D" path="res://assets/unicorn.png" id="1_unicorn"]
 [ext_resource type="Script" path="res://scripts/animal.gd" id="2_script"]
 
 [node name="Main" type="Control"]
@@ -40,6 +40,6 @@ horizontal_alignment = 1
 [node name="AnimalButton" type="TextureButton" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-texture_normal = ExtResource("1_cat")
+texture_normal = ExtResource("1_unicorn")
 stretch_mode = 0
 script = ExtResource("2_script")
