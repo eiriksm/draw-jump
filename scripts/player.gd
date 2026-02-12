@@ -1,14 +1,14 @@
 extends Sprite2D
 
 ## Player character that sits on the ground and jumps when the screen is clicked.
-## Jump height depends on the selected character (giraffe jumps higher).
+## Jump height depends on the selected character (pony jumps higher).
 
 const GRAVITY := 1200.0
 
 ## Jump impulse per character type (pixels/sec upward).
 const JUMP_VELOCITY := {
 	"unicorn": -450.0,
-	"giraffe": -620.0,
+	"pony": -620.0,
 }
 
 var velocity_y := 0.0

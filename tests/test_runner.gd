@@ -17,7 +17,7 @@ func _init() -> void:
 	failures += _test_jump_velocity_constants()
 	failures += _test_gravity_constant()
 	failures += _test_jump_sets_velocity()
-	failures += _test_giraffe_jumps_higher()
+	failures += _test_pony_jumps_higher()
 	failures += _test_no_double_jump()
 	failures += _test_landing_resets_state()
 	failures += _test_character_select_scene_parseable()
@@ -87,8 +87,8 @@ func _test_jump_velocity_constants() -> int:
 	if "JUMP_VELOCITY" not in source:
 		print("  FAIL: JUMP_VELOCITY constant not found")
 		return 1
-	if "unicorn" not in source or "giraffe" not in source:
-		print("  FAIL: Expected both unicorn and giraffe entries in JUMP_VELOCITY")
+	if "unicorn" not in source or "pony" not in source:
+		print("  FAIL: Expected both unicorn and pony entries in JUMP_VELOCITY")
 		return 1
 	print("  PASS")
 	return 0
@@ -132,26 +132,26 @@ func _test_jump_sets_velocity() -> int:
 	return 0
 
 
-func _test_giraffe_jumps_higher() -> int:
-	print("Test: Giraffe jumps higher than unicorn...")
+func _test_pony_jumps_higher() -> int:
+	print("Test: Pony jumps higher than unicorn...")
 	var unicorn := _make_player("unicorn")
-	var giraffe := _make_player("giraffe")
-	if unicorn == null or giraffe == null:
+	var pony := _make_player("pony")
+	if unicorn == null or pony == null:
 		return 1
 
 	unicorn.jump()
-	giraffe.jump()
+	pony.jump()
 
 	# More negative velocity = higher jump.
-	if giraffe.velocity_y >= unicorn.velocity_y:
-		print("  FAIL: Giraffe velocity (%f) should be more negative than unicorn (%f)" % [giraffe.velocity_y, unicorn.velocity_y])
+	if pony.velocity_y >= unicorn.velocity_y:
+		print("  FAIL: Pony velocity (%f) should be more negative than unicorn (%f)" % [pony.velocity_y, unicorn.velocity_y])
 		unicorn.queue_free()
-		giraffe.queue_free()
+		pony.queue_free()
 		return 1
 
 	print("  PASS")
 	unicorn.queue_free()
-	giraffe.queue_free()
+	pony.queue_free()
 	return 0
 
 
@@ -231,14 +231,14 @@ func _test_character_select_scene_parseable() -> int:
 	if "CatButton" not in content:
 		print("  FAIL: Scene does not contain CatButton")
 		return 1
-	if "GiraffeButton" not in content:
-		print("  FAIL: Scene does not contain GiraffeButton")
+	if "PonyButton" not in content:
+		print("  FAIL: Scene does not contain PonyButton")
 		return 1
 	if "unicorn.png" not in content:
 		print("  FAIL: Scene does not reference unicorn.png")
 		return 1
-	if "giraffe.png" not in content:
-		print("  FAIL: Scene does not reference giraffe.png")
+	if "pony.png" not in content:
+		print("  FAIL: Scene does not reference pony.png")
 		return 1
 
 	print("  PASS")

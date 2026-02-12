@@ -1,20 +1,20 @@
 extends Control
 
-## Character selection screen – lets the player pick between cat and giraffe
+## Character selection screen – lets the player pick between unicorn and pony
 ## then transitions to the game scene, passing the chosen character via metadata.
 
 
 func _ready() -> void:
 	%CatButton.pressed.connect(_on_unicorn_selected)
-	%GiraffeButton.pressed.connect(_on_giraffe_selected)
+	%PonyButton.pressed.connect(_on_pony_selected)
 
 
 func _on_unicorn_selected() -> void:
 	_start_game("unicorn")
 
 
-func _on_giraffe_selected() -> void:
-	_start_game("giraffe")
+func _on_pony_selected() -> void:
+	_start_game("pony")
 
 
 func _start_game(character: String) -> void:
