@@ -3,7 +3,7 @@ extends Node2D
 ## Main game scene — scrolls the world to the left and lets the player jump.
 
 const SCROLL_SPEED := 200.0
-const GROUND_Y := 500
+const PLAYER_Y := 436
 
 @onready var player: Sprite2D = $Player
 @onready var background: Node2D = $Background
@@ -22,7 +22,8 @@ func _ready() -> void:
 		player.scale = Vector2(2.0, 2.0)
 
 	player.character_type = character
-	player.position = Vector2(150, GROUND_Y - 64)
+	player.position = Vector2(150, PLAYER_Y)
+	player.ground_y = PLAYER_Y
 
 
 func _process(delta: float) -> void:
