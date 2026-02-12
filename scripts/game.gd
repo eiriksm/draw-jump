@@ -7,9 +7,12 @@ const PLAYER_Y := 436
 
 @onready var player: Sprite2D = $Player
 @onready var background: Node2D = $Background
+@onready var back_button: Button = %BackButton
 
 
 func _ready() -> void:
+	back_button.pressed.connect(_on_back_pressed)
+
 	var character: String = "unicorn"
 	if get_tree().has_meta("selected_character"):
 		character = get_tree().get_meta("selected_character")
@@ -29,6 +32,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	# Scroll background layers.
 	background.scroll(delta, SCROLL_SPEED)
+
+
+func _on_back_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/character_select.tscn")
 
 
 func _unhandled_input(event: InputEvent) -> void:
