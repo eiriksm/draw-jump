@@ -22,7 +22,7 @@ func _ready() -> void:
 		player.scale = Vector2(2.0, 2.0)
 
 	player.character_type = character
-	player.position = Vector2(150, GROUND_Y)
+	player.position = Vector2(150, GROUND_Y - 64)
 
 
 func _process(delta: float) -> void:
