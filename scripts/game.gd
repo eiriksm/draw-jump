@@ -19,8 +19,7 @@ func _ready() -> void:
 	var tex := load(tex_path) as Texture2D
 	if tex:
 		player.texture = tex
-		# The 128x128 sprites are already a good size — no extra scaling needed.
-		player.scale = Vector2(1.0, 1.0)
+		player.scale = Vector2(2.0, 2.0)
 
 	player.character_type = character
 	player.position = Vector2(150, GROUND_Y)
