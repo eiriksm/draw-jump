@@ -43,7 +43,7 @@ jobs:
           errors=0
 
           # Check required files exist
-          for f in project.godot scenes/main.tscn scripts/animal.gd; do
+          for f in project.godot scenes/character_select.tscn scenes/game.tscn scripts/player.gd scripts/game.gd scripts/character_select.gd; do
             if [ -f "$f" ]; then
               echo "PASS: $f exists"
             else
@@ -57,22 +57,6 @@ jobs:
             echo "PASS: main scene configured"
           else
             echo "FAIL: main scene not configured"
-            errors=$((errors + 1))
-          fi
-
-          # Check animal script references rotation
-          if grep -q 'ROTATE_DEGREES' scripts/animal.gd; then
-            echo "PASS: rotation constant defined"
-          else
-            echo "FAIL: rotation constant missing"
-            errors=$((errors + 1))
-          fi
-
-          # Check scene references the script
-          if grep -q 'animal.gd' scenes/main.tscn; then
-            echo "PASS: scene references animal script"
-          else
-            echo "FAIL: scene does not reference animal script"
             errors=$((errors + 1))
           fi
 
