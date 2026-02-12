@@ -46,7 +46,8 @@ jobs:
       - name: Validate scene files
         run: |
           echo "Checking scene files..."
-          test -f scenes/main.tscn
+          test -f scenes/character_select.tscn
+          test -f scenes/game.tscn
           echo "All scene files present."
 
       - name: Validate scripts

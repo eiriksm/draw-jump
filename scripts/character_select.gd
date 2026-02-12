@@ -5,12 +5,12 @@ extends Control
 
 
 func _ready() -> void:
-	%CatButton.pressed.connect(_on_cat_selected)
+	%CatButton.pressed.connect(_on_unicorn_selected)
 	%GiraffeButton.pressed.connect(_on_giraffe_selected)
 
 
-func _on_cat_selected() -> void:
-	_start_game("cat")
+func _on_unicorn_selected() -> void:
+	_start_game("unicorn")
 
 
 func _on_giraffe_selected() -> void:

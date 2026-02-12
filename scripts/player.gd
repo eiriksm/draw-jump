@@ -7,13 +7,13 @@ const GRAVITY := 1200.0
 
 ## Jump impulse per character type (pixels/sec upward).
 const JUMP_VELOCITY := {
-	"cat": -450.0,
+	"unicorn": -450.0,
 	"giraffe": -620.0,
 }
 
 var velocity_y := 0.0
 var ground_y := 0.0
-var character_type := "cat"
+var character_type := "unicorn"
 var _is_on_ground := true
 
 
@@ -36,4 +36,4 @@ func jump() -> void:
 	if not _is_on_ground:
 		return
 	_is_on_ground = false
-	velocity_y = JUMP_VELOCITY.get(character_type, JUMP_VELOCITY["cat"])
+	velocity_y = JUMP_VELOCITY.get(character_type, JUMP_VELOCITY["unicorn"])
