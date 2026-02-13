@@ -1,4 +1,4 @@
-name: Test Godot Project
+name: Test
 
 on:
   push:
