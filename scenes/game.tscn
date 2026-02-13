@@ -15,3 +15,13 @@ script = ExtResource("4_bg")
 position = Vector2(150, 436)
 texture = ExtResource("1_unicorn")
 script = ExtResource("3_player")
+
+[node name="UILayer" type="CanvasLayer" parent="."]
+
+[node name="BackButton" type="Button" parent="UILayer"]
+unique_name_in_owner = true
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 116.0
+offset_bottom = 48.0
+text = "< Back"
