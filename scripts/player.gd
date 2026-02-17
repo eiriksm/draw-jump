@@ -29,10 +29,14 @@ func _process(delta: float) -> void:
 		position.y += velocity_y * delta
 
 		# Unicorn does a front flip during the jump.
-		if character_type == "unicorn" and _jump_duration > 0.0:
+		# Pony does a double back flip during the jump.
+		if _jump_duration > 0.0:
 			_jump_elapsed += delta
 			var progress := clampf(_jump_elapsed / _jump_duration, 0.0, 1.0)
-			rotation = progress * TAU
+			if character_type == "unicorn":
+				rotation = progress * TAU
+			elif character_type == "pony":
+				rotation = progress * -2.0 * TAU
 
 		if position.y >= ground_y:
 			position.y = ground_y
@@ -46,6 +50,5 @@ func jump() -> void:
 		return
 	_is_on_ground = false
 	velocity_y = JUMP_VELOCITY.get(character_type, JUMP_VELOCITY["unicorn"])
-	if character_type == "unicorn":
-		_jump_elapsed = 0.0
-		_jump_duration = 2.0 * absf(velocity_y) / GRAVITY
+	_jump_elapsed = 0.0
+	_jump_duration = 2.0 * absf(velocity_y) / GRAVITY
