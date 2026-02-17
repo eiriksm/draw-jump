@@ -20,6 +20,8 @@ func _init() -> void:
 	failures += _test_pony_jumps_higher()
 	failures += _test_no_double_jump()
 	failures += _test_landing_resets_state()
+	failures += _test_unicorn_front_flip()
+	failures += _test_pony_no_front_flip()
 	failures += _test_character_select_scene_parseable()
 	failures += _test_game_scene_parseable()
 	failures += _test_project_main_scene()
@@ -204,6 +206,63 @@ func _test_landing_resets_state() -> int:
 
 	if player.position.y != player.ground_y:
 		print("  FAIL: Player y should equal ground_y after landing")
+		player.queue_free()
+		return 1
+
+	print("  PASS")
+	player.queue_free()
+	return 0
+
+
+# ---- Front flip tests ----
+
+func _test_unicorn_front_flip() -> int:
+	print("Test: Unicorn rotates during jump (front flip)...")
+	var player := _make_player("unicorn")
+	if player == null:
+		return 1
+
+	player.jump()
+
+	# Simulate a few frames so the unicorn is mid-air.
+	for i in range(10):
+		player._process(0.016)
+
+	if player.rotation == 0.0:
+		print("  FAIL: Unicorn rotation should be non-zero mid-jump, got %f" % player.rotation)
+		player.queue_free()
+		return 1
+
+	# Let the jump finish.
+	for i in range(100):
+		player._process(0.016)
+		if player._is_on_ground:
+			break
+
+	if player.rotation != 0.0:
+		print("  FAIL: Unicorn rotation should be 0 after landing, got %f" % player.rotation)
+		player.queue_free()
+		return 1
+
+	print("  PASS")
+	player.queue_free()
+	return 0
+
+
+func _test_pony_no_front_flip() -> int:
+	print("Test: Pony does not rotate during jump...")
+	var player := _make_player("pony")
+	if player == null:
+		return 1
+
+	player.jump()
+
+	# Simulate a few frames so the pony is mid-air.
+	for i in range(10):
+		player._process(0.016)
+
+	if player.rotation != 0.0:
+		print("  FAIL: Pony rotation should remain 0, got %f" % player.rotation)
 		player.queue_free()
 		return 1
 
