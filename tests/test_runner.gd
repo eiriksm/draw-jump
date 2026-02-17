@@ -19,7 +19,8 @@ func _init() -> void:
 	failures += _test_fart_velocity_constant()
 	failures += _test_jump_sets_velocity()
 	failures += _test_pony_jumps_higher()
-	failures += _test_fart_when_clicking_in_air()
+	failures += _test_no_fart_while_rising()
+	failures += _test_fart_when_falling()
 	failures += _test_single_fart_per_jump()
 	failures += _test_fart_resets_on_landing()
 	failures += _test_landing_resets_state()
@@ -177,21 +178,55 @@ func _test_pony_jumps_higher() -> int:
 
 # ---- Fart mechanic tests ----
 
-func _test_fart_when_clicking_in_air() -> int:
-	print("Test: Clicking in the air triggers a fart boost...")
+func _test_no_fart_while_rising() -> int:
+	print("Test: Clicking while rising does nothing (preserves jump)...")
+	var player := _make_player("unicorn")
+	if player == null:
+		return 1
+
+	player.jump()
+	var jump_velocity: float = player.velocity_y
+
+	# Simulate only a few frames — player is still rising.
+	for i in range(5):
+		player._process(0.016)
+
+	var pre_click_velocity: float = player.velocity_y
+
+	# Click while rising — should be ignored, not fart.
+	player.jump()
+
+	if player.velocity_y != pre_click_velocity:
+		print("  FAIL: Velocity should not change while rising, was %f, now %f" % [pre_click_velocity, player.velocity_y])
+		player.queue_free()
+		return 1
+
+	print("  PASS")
+	player.queue_free()
+	return 0
+
+
+func _test_fart_when_falling() -> int:
+	print("Test: Clicking while falling triggers a fart boost...")
 	var player := _make_player("unicorn")
 	if player == null:
 		return 1
 
 	player.jump()
 
-	# Simulate a few frames so gravity slows the upward velocity.
-	for i in range(10):
+	# Simulate enough frames for the player to pass the apex and start falling.
+	# Unicorn jump velocity = -450, gravity = 1200 → apex at ~0.375s → ~24 frames.
+	for i in range(30):
 		player._process(0.016)
+
+	if player.velocity_y <= 0.0:
+		print("  FAIL: Player should be falling by now, velocity_y = %f" % player.velocity_y)
+		player.queue_free()
+		return 1
 
 	var pre_fart_velocity: float = player.velocity_y
 
-	# Click again while in air — should fart.
+	# Click while falling — should fart.
 	player.jump()
 
 	if player.velocity_y >= pre_fart_velocity:
@@ -217,8 +252,8 @@ func _test_single_fart_per_jump() -> int:
 
 	player.jump()
 
-	# Simulate a few frames.
-	for i in range(10):
+	# Simulate enough frames to start falling.
+	for i in range(30):
 		player._process(0.016)
 
 	# First fart.
@@ -251,8 +286,8 @@ func _test_fart_resets_on_landing() -> int:
 
 	player.jump()
 
-	# Simulate a few frames, then fart.
-	for i in range(10):
+	# Simulate enough frames to start falling, then fart.
+	for i in range(30):
 		player._process(0.016)
 	player.jump()  # Fart
 
@@ -267,9 +302,9 @@ func _test_fart_resets_on_landing() -> int:
 		player.queue_free()
 		return 1
 
-	# Jump again and verify we can fart again.
+	# Jump again and simulate enough frames to start falling.
 	player.jump()
-	for i in range(10):
+	for i in range(30):
 		player._process(0.016)
 
 	var pre_fart_velocity: float = player.velocity_y

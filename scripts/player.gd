@@ -83,7 +83,7 @@ func jump() -> void:
 
 
 func fart() -> void:
-	if _has_farted:
+	if _has_farted or velocity_y < 0.0:
 		return
 	_has_farted = true
 	velocity_y = FART_VELOCITY
