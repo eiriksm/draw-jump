@@ -25,6 +25,9 @@ func _init() -> void:
 	failures += _test_character_select_scene_parseable()
 	failures += _test_game_scene_parseable()
 	failures += _test_project_main_scene()
+	failures += _test_treasure_script_loads()
+	failures += _test_player_jumped_signal()
+	failures += _test_game_jump_count_constants()
 
 	print("\n=== Results: %d failure(s) ===" % failures)
 
@@ -348,6 +351,57 @@ func _test_project_main_scene() -> int:
 
 	if "character_select.tscn" not in content:
 		print("  FAIL: Main scene is not character_select.tscn")
+		return 1
+
+	print("  PASS")
+	return 0
+
+
+# ---- Treasure tests ----
+
+func _test_treasure_script_loads() -> int:
+	print("Test: Treasure script loads...")
+	var script := load("res://scripts/treasure.gd") as GDScript
+	if script == null:
+		print("  FAIL: Could not load treasure.gd")
+		return 1
+	print("  PASS")
+	return 0
+
+
+func _test_player_jumped_signal() -> int:
+	print("Test: Player emits jumped signal...")
+	var player := _make_player("unicorn")
+	if player == null:
+		return 1
+
+	var signal_received := [false]
+	player.jumped.connect(func(): signal_received[0] = true)
+	player.jump()
+
+	if not signal_received[0]:
+		print("  FAIL: jumped signal was not emitted")
+		player.queue_free()
+		return 1
+
+	print("  PASS")
+	player.queue_free()
+	return 0
+
+
+func _test_game_jump_count_constants() -> int:
+	print("Test: Game script has treasure jump count constants...")
+	var script := load("res://scripts/game.gd") as GDScript
+	if script == null:
+		print("  FAIL: Could not load game.gd")
+		return 1
+
+	var source: String = script.source_code
+	if "JUMPS_FOR_TREASURE" not in source:
+		print("  FAIL: JUMPS_FOR_TREASURE constant not found")
+		return 1
+	if "TREASURE_DELAY" not in source:
+		print("  FAIL: TREASURE_DELAY constant not found")
 		return 1
 
 	print("  PASS")

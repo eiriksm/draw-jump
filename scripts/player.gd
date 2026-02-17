@@ -5,6 +5,8 @@ extends Sprite2D
 
 const GRAVITY := 1200.0
 
+signal jumped
+
 ## Jump impulse per character type (pixels/sec upward).
 const JUMP_VELOCITY := {
 	"unicorn": -450.0,
@@ -49,3 +51,4 @@ func jump() -> void:
 	if character_type == "unicorn":
 		_jump_elapsed = 0.0
 		_jump_duration = 2.0 * absf(velocity_y) / GRAVITY
+	jumped.emit()
