@@ -21,7 +21,7 @@ func _init() -> void:
 	failures += _test_no_double_jump()
 	failures += _test_landing_resets_state()
 	failures += _test_unicorn_front_flip()
-	failures += _test_pony_no_front_flip()
+	failures += _test_pony_double_backflip()
 	failures += _test_character_select_scene_parseable()
 	failures += _test_game_scene_parseable()
 	failures += _test_project_main_scene()
@@ -249,8 +249,8 @@ func _test_unicorn_front_flip() -> int:
 	return 0
 
 
-func _test_pony_no_front_flip() -> int:
-	print("Test: Pony does not rotate during jump...")
+func _test_pony_double_backflip() -> int:
+	print("Test: Pony does a double back flip during jump...")
 	var player := _make_player("pony")
 	if player == null:
 		return 1
@@ -261,8 +261,19 @@ func _test_pony_no_front_flip() -> int:
 	for i in range(10):
 		player._process(0.016)
 
+	if player.rotation >= 0.0:
+		print("  FAIL: Pony rotation should be negative mid-jump (backflip), got %f" % player.rotation)
+		player.queue_free()
+		return 1
+
+	# Let the jump finish.
+	for i in range(100):
+		player._process(0.016)
+		if player._is_on_ground:
+			break
+
 	if player.rotation != 0.0:
-		print("  FAIL: Pony rotation should remain 0, got %f" % player.rotation)
+		print("  FAIL: Pony rotation should be 0 after landing, got %f" % player.rotation)
 		player.queue_free()
 		return 1
 
