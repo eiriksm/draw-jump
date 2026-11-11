@@ -28,6 +28,8 @@ func _init() -> void:
 	failures += _test_treasure_script_loads()
 	failures += _test_player_jumped_signal()
 	failures += _test_game_jump_count_constants()
+	failures += _test_treasure_collected_on_ground()
+	failures += _test_treasure_can_be_jumped_over()
 
 	print("\n=== Results: %d failure(s) ===" % failures)
 
@@ -404,6 +406,47 @@ func _test_game_jump_count_constants() -> int:
 		print("  FAIL: TREASURE_DELAY constant not found")
 		return 1
 
+	print("  PASS")
+	return 0
+
+
+func _make_treasure() -> Node2D:
+	var script := load("res://scripts/treasure.gd") as GDScript
+	var treasure := Node2D.new()
+	treasure.set_script(script)
+	treasure.position = Vector2(150, 500)
+	return treasure
+
+
+func _test_treasure_collected_on_ground() -> int:
+	print("Test: Treasure is collected when player is on the ground...")
+	var treasure := _make_treasure()
+	var ok: bool = treasure.check_collected(150.0, 0.0)
+	treasure.free()
+	if not ok:
+		print("  FAIL: treasure not collected by grounded player")
+		return 1
+	print("  PASS")
+	return 0
+
+
+func _test_treasure_can_be_jumped_over() -> int:
+	print("Test: Treasure can be jumped over...")
+	var treasure := _make_treasure()
+	if treasure.check_collected(150.0, 80.0):
+		print("  FAIL: treasure collected by airborne player")
+		treasure.free()
+		return 1
+	if treasure.is_missed(150.0):
+		print("  FAIL: treasure reported missed while still under player")
+		treasure.free()
+		return 1
+	treasure.position.x = 100.0
+	if not treasure.is_missed(150.0):
+		print("  FAIL: treasure not reported missed after passing player")
+		treasure.free()
+		return 1
+	treasure.free()
 	print("  PASS")
 	return 0
 
