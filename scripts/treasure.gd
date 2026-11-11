@@ -1,7 +1,8 @@
 extends Node2D
 
 ## A treasure chest that scrolls left with the world.
-## When the player reaches it, the level ends.
+## When the player reaches it on (or near) the ground, the level ends.
+## The player can jump over it, in which case it is missed.
 
 signal collected
 
@@ -10,6 +11,10 @@ const CHEST_DARK := Color(0.6, 0.4, 0.05)
 const CHEST_LID := Color(0.9, 0.7, 0.15)
 const GOLD_COLOR := Color(1.0, 0.85, 0.2)
 const SPARKLE_COLOR := Color(1.0, 1.0, 0.6)
+## Horizontal distance within which the player touches the chest.
+const COLLECT_RANGE := 40.0
+## Max height above the ground the player can be and still grab the chest.
+const COLLECT_HEIGHT := 50.0
 
 var scroll_speed := 200.0
 var _sparkle_time := 0.0
@@ -46,8 +51,16 @@ func _draw_sparkle(pos: Vector2, size: float, color: Color) -> void:
 	draw_line(pos + Vector2(0, -size), pos + Vector2(0, size), color, 2.0)
 
 
-func check_collected(player_x: float) -> bool:
-	if abs(position.x - player_x) < 40.0:
+## Returns true if the player touches the chest. [param player_height] is how
+## far above the ground the player currently is (0 when standing).
+func check_collected(player_x: float, player_height: float = 0.0) -> bool:
+	if abs(position.x - player_x) < COLLECT_RANGE and player_height < COLLECT_HEIGHT:
 		collected.emit()
 		return true
 	return false
+
+
+## Returns true once the chest has scrolled past the player without being
+## collected (i.e. the player jumped over it).
+func is_missed(player_x: float) -> bool:
+	return position.x < player_x - COLLECT_RANGE

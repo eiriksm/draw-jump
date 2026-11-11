@@ -46,8 +46,12 @@ func _process(delta: float) -> void:
 	background.scroll(delta, SCROLL_SPEED)
 
 	# Check if the player has reached the treasure.
-	if _treasure and _treasure.check_collected(player.position.x):
-		_end_level()
+	if _treasure:
+		var height := PLAYER_Y - player.position.y
+		if _treasure.check_collected(player.position.x, height):
+			_end_level()
+		elif _treasure.is_missed(player.position.x):
+			_on_treasure_missed()
 
 
 func _on_back_pressed() -> void:
@@ -76,12 +80,23 @@ func _start_treasure_timer() -> void:
 
 
 func _spawn_treasure() -> void:
+	if _level_ended or not is_inside_tree():
+		return
 	var treasure_script := load("res://scripts/treasure.gd") as GDScript
 	_treasure = Node2D.new()
 	_treasure.set_script(treasure_script)
 	_treasure.position = Vector2(900, PLAYER_Y)
 	_treasure.scroll_speed = SCROLL_SPEED
 	add_child(_treasure)
+
+
+## The player jumped over the treasure — remove it and start counting again,
+## so a new treasure appears after the same number of jumps and delay.
+func _on_treasure_missed() -> void:
+	_treasure.queue_free()
+	_treasure = null
+	_jump_count = 0
+	_treasure_spawned = false
 
 
 func _end_level() -> void:
